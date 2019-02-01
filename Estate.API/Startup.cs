@@ -1,4 +1,5 @@
-﻿using Estate.API.Infrastructure;
+﻿
+using Estate.API.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -22,18 +23,11 @@ namespace Estate.API
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddIdentityServer()
+                .AddInMemoryIdentityResources(IdentityServerConfiguration.GetIdentityResources())
                 .AddInMemoryApiResources(IdentityServerConfiguration.GetApis())
                 .AddInMemoryClients(IdentityServerConfiguration.GetClients())
+                .AddTestUsers(IdentityServerConfiguration.GetUsers())
                 .AddDeveloperSigningCredential();
-
-            //services.AddAuthorization();
-
-            //services.AddAuthentication()
-            //    .AddJwtBearer("Bearer", option => {
-            //        option.Authority = "http://localhost:5000";
-            //        option.RequireHttpsMetadata = false;
-            //        option.Audience = IdentityServerConfiguration.SCOPE_NAME;
-            //    });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -45,7 +39,6 @@ namespace Estate.API
             }
 
             app.UseIdentityServer();
-            //app.UseAuthentication();
             app.UseMvc();
         }
     }
