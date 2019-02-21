@@ -1,7 +1,10 @@
-﻿using IdentityServer4.Models;
+﻿using IdentityModel;
+using IdentityServer4.Models;
 using IdentityServer4.Test;
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
+using static IdentityServer4.IdentityServerConstants;
 
 namespace Estate.API.Infrastructure
 {
@@ -20,7 +23,10 @@ namespace Estate.API.Infrastructure
         public static List<ApiResource> GetApis() =>
             new List<ApiResource>
             {
-                new ApiResource(SCOPE_NAME)
+                new ApiResource(SCOPE_NAME) {
+                    ApiSecrets = new [] { new Secret("api-secret".Sha256()) },
+                    UserClaims  = new [] { JwtClaimTypes.Role }
+                }
             };
 
         public static List<Client> GetClients() =>
@@ -34,7 +40,7 @@ namespace Estate.API.Infrastructure
                     {
                         new Secret("SuperSecret".Sha256())
                     },
-                    AllowedScopes = { SCOPE_NAME }
+                    AllowedScopes = { SCOPE_NAME, StandardScopes.OpenId, StandardScopes.Profile }
                 }
             };
 
@@ -45,7 +51,12 @@ namespace Estate.API.Infrastructure
                 {
                     SubjectId = Guid.NewGuid().ToString(),
                     Username = "Jack",
-                    Password = "qwerty"
+                    Password = "qwerty",
+                    Claims = new []
+                    {
+                        new Claim(JwtClaimTypes.Name, "Petro Havrylei!"),
+                        new Claim(JwtClaimTypes.Role, "Admin")
+                    }
                 }
             };
     }
